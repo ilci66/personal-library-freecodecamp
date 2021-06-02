@@ -10,8 +10,9 @@ const commentSchema = new Schema({
 const Comment = mongoose.model('Comment', commentSchema)
 
 const bookSchema = new Schema({
-  title: {type: String, required: true},
-  comments: [commentSchema]
+  comments: [commentSchema],
+  commentcount: {type: Number, default:0},
+  title: {type: String, required: true}
 })
 
 const Book = mongoose.model('Book', bookSchema)
