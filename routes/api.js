@@ -14,14 +14,11 @@ const {Book} = require('../models.js');
 module.exports = function (app) {
   app.route('/api/books')
     .get(function (req, res){
-      //response will be array of book objects
-      //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
       if(req.params.id){
         res.json(req.params.id)
         return;
       }
       Book.find({}, (err, data) => {
-        let responseObject = {};
         res.json(data)
         return;
       })
@@ -60,6 +57,12 @@ module.exports = function (app) {
     
     .delete(function(req, res){
       //if successful response will be 'complete delete successful'
+      Book.deleteMany({}, (err, data) => {
+        if(!err){
+          res.send('complete delete successful')
+          return;
+        }
+      })
     });
 
 
@@ -67,50 +70,36 @@ module.exports = function (app) {
   app.route('/api/books/:id')
     .get(function (req, res){
       let bookid = req.params.id;
-      //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
-      if(bookid){
-        Book.findOne({_id: bookid}, (err, data) => {
-          if(err || !data){
-            res.send("no book exists")
-            return;
-          }else{
-            res.json(data)
-            return;
-          }
-        })
-      }
+      Book.findOne({_id: bookid}, (err, data) => {
+        if(err || !data){
+          res.send("no book exists")
+          return;
+        }else{
+          res.json(data)
+          return;
+        }
+      })
     })
     
     .post(function(req, res){
       let bookid = req.params.id;
       let comment = req.body.comment;
       //json res format same as .get
-      if(!comment || !bookid){
-        res.send('missing required field comment')
-        return;
-      }
-      Book.findOne({_id: bookid}, (err, data) => {
-        if(err || !data){
-          res.send("no book exists")
-          return;
-        }else{
-          let newComment = new Comment({comment:comment})
-          data.commentcount = data.commentcount + 1;
-          data.comments.push(newComment)
-          data.save((err, newData) => {
-            if(!err){
-              res.json(newData)
-              return;
-            }
-          })
-        }
-      })
-
-    })
+      //You can send a POST request containing comment as the form body data to /api/books/{_id} to add a comment to a book. The returned response will be the books object similar to GET /api/books/{_id} request in an earlier test. If comment is not included in the request, return the string missing required field comment. If no book is found, return the string no book exists.
+      
+     })
     
     .delete(function(req, res){
       let bookid = req.params.id;
-      //if successful response will be 'delete successful'
+      Book.findOneAndRemove({_id: bookid}, (err, data) => {
+        if(!data){
+          res.send('no book exists')
+          return;
+        }else{
+          res.send('delete successful')
+          return;
+        }
+      })
     });
   
 };
