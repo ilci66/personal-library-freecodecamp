@@ -8,7 +8,7 @@
 
 'use strict';
 const mongoose = require('mongoose');
-const {Comment} = require('../models.js');
+// const {Comment} = require('../models.js');
 const {Book} = require('../models.js');
 
 module.exports = function (app) {
@@ -73,10 +73,8 @@ module.exports = function (app) {
       Book.findOne({_id: bookid}, (err, data) => {
         if(err || !data){
           res.send("no book exists")
-          return;
         }else{
           res.json(data)
-          return;
         }
       })
     })
@@ -84,9 +82,31 @@ module.exports = function (app) {
     .post(function(req, res){
       let bookid = req.params.id;
       let comment = req.body.comment;
-      //json res format same as .get
-      //You can send a POST request containing comment as the form body data to /api/books/{_id} to add a comment to a book. The returned response will be the books object similar to GET /api/books/{_id} request in an earlier test. If comment is not included in the request, return the string missing required field comment. If no book is found, return the string no book exists.
-      
+      console.log('comment', comment)
+      if(!comment){
+        res.send('missing required field comment')
+        return;
+      }
+      Book.findById(bookid, (err, data) => {
+        if(!data){
+          console.log('no such book')
+          res.send('no book exists')
+        }else{
+          console.log(data)
+          data.comments.push(comment);
+          // data.commentcount = data.commentcount + 1;
+          data.save((err, newData) => {
+            // let responseObject = {};
+            // res.json(responseObject)
+            res.json({
+              comments: newData.comments,
+              _id: newData._id,
+              commentcount: newData.comments.length,
+              title: newData.title
+            })
+          })
+        }
+      })  
      })
     
     .delete(function(req, res){
@@ -94,10 +114,8 @@ module.exports = function (app) {
       Book.findOneAndRemove({_id: bookid}, (err, data) => {
         if(!data){
           res.send('no book exists')
-          return;
         }else{
           res.send('delete successful')
-          return;
         }
       })
     });
