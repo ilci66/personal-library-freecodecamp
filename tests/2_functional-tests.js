@@ -104,10 +104,10 @@ suite('Functional Tests', function() {
       test('Test GET /api/books/[id] with valid id in db',  function(done){
         chai
           .request(server)
-          .get('/api/books/60b8baf2e217fc0a29a0a18e')
+          .get(`/api/books/${deleteId}`)
           .end((err, res) => {
             assert.equal(res.status, 200)
-            assert.equal(res.body._id, "60b8baf2e217fc0a29a0a18e")
+            assert.equal(res.body._id, deleteId)
             done();
           })
       });
@@ -120,7 +120,7 @@ suite('Functional Tests', function() {
       test('Test POST /api/books/[id] with comment', function(done){
         chai
           .request(server)
-          .post('/api/books/60b8baf2e217fc0a29a0a18e')
+          .post(`/api/books/${deleteId}`)
           .type('form')
           .send({comment: "some comment"})
           .end((err, res) => {
