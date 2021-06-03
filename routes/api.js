@@ -80,14 +80,14 @@ module.exports = function (app) {
     .post(function(req, res){
       let bookid = req.params.id;
       let comment = req.body.comment;
-      console.log('comment', comment)
+
       if(!comment){
         res.send('missing required field comment')
         return;
       }
+      
       Book.findById(bookid, (err, data) => {
         if(!data){
-          console.log('no such book')
           res.send('no book exists')
         }else{
           console.log(data)
