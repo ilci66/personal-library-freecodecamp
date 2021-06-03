@@ -27,7 +27,6 @@ module.exports = function (app) {
     
     .post(function (req, res){
       let title = req.body.title;
-      //response will contain new book object including atleast _id and title
       if(!title){
         res.send("missing required field title")
         return;
@@ -56,7 +55,6 @@ module.exports = function (app) {
     })
     
     .delete(function(req, res){
-      //if successful response will be 'complete delete successful'
       Book.deleteMany({}, (err, data) => {
         if(!err){
           res.send('complete delete successful')
@@ -96,8 +94,6 @@ module.exports = function (app) {
           data.comments.push(comment);
           // data.commentcount = data.commentcount + 1;
           data.save((err, newData) => {
-            // let responseObject = {};
-            // res.json(responseObject)
             res.json({
               comments: newData.comments,
               _id: newData._id,
